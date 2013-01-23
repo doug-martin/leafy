@@ -1,4 +1,4 @@
-[![build status](https://secure.travis-ci.org/doug-martin/leafy.png)](http://travis-ci.org/doug-martin/leafy)
+[![Build Status](https://travis-ci.org/doug-martin/leafy.png?branch=master)](https://travis-ci.org/doug-martin/leafy)
 
 [![browser support](http://ci.testling.com/doug-martin/leafy.png)](http://ci.testling.com/doug-martin/leafy)
 
