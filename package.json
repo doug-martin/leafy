@@ -21,10 +21,10 @@
     "testling": {
         "files": "test/browserling.js",
         "browsers": {
-            "ie": [6, 7, 8, 9],
-            "chrome": [4, 23, "canary"],
-            "firefox": [3, 3.5, 3.6, 4, 17, "nightly"],
-            "opera": [10, 10.5, 11, 11.5, 11.6, 12, "next"],
+            "ie": [7, 8, 9, 10],
+            "chrome": [22, 23, "canary"],
+            "firefox": [15, 17, "nightly"],
+            "opera": [11.6, 12, "next"],
             "safari": ["5.0.1", 5.1]
         }
     },
