@@ -124,9 +124,9 @@
                             this.traverse(node.right, order, callback);
                             callback(node.data);
                         } else if (order === Tree.REVERSE_ORDER) {
-                            this.traverseWithCondition(node.right, order, callback);
+                            this.traverse(node.right, order, callback);
                             callback(node.data);
-                            this.traverseWithCondition(node.left, order, callback);
+                            this.traverse(node.left, order, callback);
 
                         }
                     }
