@@ -199,7 +199,8 @@
                     scope = scope || this;
                     var ret = false;
                     this.traverseWithCondition(this.__root, order, function (node) {
-                        return (ret = cb.call(scope, node, this));
+                        ret = cb.call(scope, node, this);
+                        return ret;
                     });
                     return ret;
                 },
@@ -335,8 +336,7 @@
                 } else if (nn.balance === bal) {
                     root.balance = -bal;
                     n.balance = 0;
-                }
-                else { /* nn.balance == -bal */
+                } else { /* nn.balance == -bal */
                     root.balance = 0;
                     n.balance = bal;
                 }
@@ -347,13 +347,12 @@
                 var otherDir = dir === "left" ? "right" : "left";
 
                 var n = root[dir];
-                var bal = dir === "left" ? -1 : +1;
+                var bal = dir === "right" ? -1 : +1;
 
                 if (n.balance === bal) {
                     root.balance = n.balance = 0;
                     root = rotateSingle(root, otherDir, dir);
-                }
-                else {
+                } else {
                     adjustBalance(root, dir, bal);
                     root = rotateDouble(root, otherDir, dir);
                 }
@@ -365,16 +364,14 @@
             var removeAdjustBalance = function (root, dir, done) {
                 var otherDir = dir === "left" ? "right" : "left";
                 var n = root[otherDir];
-                var bal = dir === "left" ? -1 : 1;
+                var bal = dir === "right" ? -1 : 1;
                 if (n.balance === -bal) {
                     root.balance = n.balance = 0;
                     root = rotateSingle(root, dir, otherDir);
-                }
-                else if (n.balance === bal) {
+                } else if (n.balance === bal) {
                     adjustBalance(root, otherDir, -bal);
                     root = rotateDouble(root, dir, otherDir);
-                }
-                else { /* n.balance == 0 */
+                } else { /* n.balance == 0 */
                     root.balance = -bal;
                     n.balance = bal;
                     root = rotateSingle(root, dir, otherDir);
@@ -383,81 +380,103 @@
                 return root;
             };
 
-            var insert = function (root, data, done, compare) {
+            function insert(tree, data, cmp) {
+                /* Empty tree case */
+                var root = tree.__root;
                 if (root === null || root === undefined) {
-                    root = makeNode(data);
+                    tree.__root = makeNode(data);
                 } else {
-                    var dir = compare(data, root.data) === -1 ? "left" : "right";
-                    root[dir] = insert(root[dir], data, done, compare);
-
-                    if (!done.done) {
-                        /* Update balance factors */
-                        root.balance += dir === "left" ? -1 : 1;
-                        /* Rebalance as necessary and terminate */
-                        if (root.balance === 0) {
-                            done.done = true;
-                        } else if (abs(root.balance) > 1) {
-                            root = insertAdjustBalance(root, dir);
-                            done.done = true;
+                    var it = root, upd = [], up = [], top = 0, dir;
+                    while (true) {
+                        dir = upd[top] = cmp(data, it.data) === -1 ? "left" : "right";
+                        up[top++] = it;
+                        if (!it[dir]) {
+                            it[dir] = makeNode(data);
+                            break;
                         }
+                        it = it[dir];
                     }
-                }
-
-                return root;
-            };
-
-            var remove = function (root, data, done, compare) {
-                var dir, cmp, save, b;
-                if (root) {
-                    //Remove node
-                    cmp = compare(data, root.data);
-                    if (cmp === 0) {
-                        // Unlink and fix parent
-                        var l = root.left, r = root.right;
-                        if (!l || !r) {
-                            dir = !l ? "right" : "left";
-                            save = root[dir];
-                            return save;
-                        }
-                        else {
-                            var heir = l;
-                            while ((r = heir.right) !== null) {
-                                heir = r;
+                    if (!it[dir]) {
+                        return null;
+                    }
+                    while (--top >= 0) {
+                        up[top].balance += upd[top] === "right" ? -1 : 1;
+                        if (up[top].balance === 0) {
+                            break;
+                        } else if (abs(up[top].balance) > 1) {
+                            up[top] = insertAdjustBalance(up[top], upd[top]);
+                            if (top !== 0) {
+                                up[top - 1][upd[top - 1]] = up[top];
+                            } else {
+                                tree.__root = up[0];
                             }
-                            root.data = heir.data;
-                            //reset and start searching
-                            data = heir.data;
-                        }
-                    }
-                    dir = compare(root.data, data) === -1 ? "right" : "left";
-                    root[dir] = remove(root[dir], data, done, compare);
-                    if (!done.done) {
-                        /* Update balance factors */
-                        b = (root.balance += (dir === "left" ? 1 : -1));
-                        /* Terminate or rebalance as necessary */
-                        var a = abs(b);
-                        if (a === 1) {
-                            done.done = true;
-                        } else if (a > 1) {
-                            root = removeAdjustBalance(root, dir, done);
+                            break;
                         }
                     }
                 }
-                return root;
-            };
+            }
+
+            function remove(tree, data, cmp) {
+                var root = tree.__root;
+                if (root !== null && root !== undefined) {
+                    var it = root, top = 0, up = [], upd = [], done = {done: false}, dir, compare;
+                    while (true) {
+                        if (!it) {
+                            return;
+                        } else if ((compare = cmp(data, it.data)) === 0) {
+                            break;
+                        }
+                        dir = upd[top] = compare === -1 ? "left" : "right";
+                        up[top++] = it;
+                        it = it[dir];
+                    }
+                    var l = it.left, r = it.right;
+                    if (!l || !r) {
+                        dir = !l ? "right" : "left";
+                        if (top !== 0) {
+                            up[top - 1][upd[top - 1]] = it[dir];
+                        } else {
+                            tree.__root = it[dir];
+                        }
+                    } else {
+                        var heir = l;
+                        upd[top] = "left";
+                        up[top++] = it;
+                        while (heir.right) {
+                            upd[top] = "right";
+                            up[top++] = heir;
+                            heir = heir.right;
+                        }
+                        it.data = heir.data;
+                        up[top - 1][up[top - 1] === it ? "left" : "right"] = heir.left;
+                    }
+                    while (--top >= 0 && !done.done) {
+                        up[top].balance += upd[top] === "left" ? -1 : +1;
+                        if (abs(up[top].balance) === 1) {
+                            break;
+                        } else if (abs(up[top].balance) > 1) {
+                            up[top] = removeAdjustBalance(up[top], upd[top], done);
+                            if (top !== 0) {
+                                up[top - 1][upd[top - 1]] = up[top];
+                            } else {
+                                tree.__root = up[0];
+                            }
+                        }
+                    }
+                }
+            }
 
 
             return Tree.extend({
                 instance: {
 
                     insert: function (data) {
-                        var done = {done: false};
-                        this.__root = insert(this.__root, data, done, this.compare);
+                        insert(this, data, this.compare);
                     },
 
 
                     remove: function (data) {
-                        this.__root = remove(this.__root, data, {done: false}, this.compare);
+                        remove(this, data, this.compare);
                     },
 
                     __printNode: function (node, level) {
@@ -627,12 +646,13 @@
             instance: {
                 insert: function (data) {
                     if (!this.__root) {
-                        return (this.__root = {
+                        this.__root = {
                             data: data,
                             parent: null,
                             left: null,
                             right: null
-                        });
+                        };
+                        return this.__root;
                     }
                     var compare = this.compare;
                     var root = this.__root;

@@ -66,11 +66,11 @@ it.describe("leafy.AVLTree",function (it) {
     ]
 
 
-    var expectedOutput = "\t\t\t\t~\n\t\t\tz:-1\n\n\t\t\t\t\t~\n\t\t\t\tj:0\n\n\t\t\t\t\t~\n\t\ti:1\n\n\t\t\t\t~\n\t\t\t" +
-        "hi:0\n\n\t\t\t\t~\n\th:0\n\n\t\t\t\t\t~\n\t\t\t\tff:0\n\n\t\t\t\t\t~\n\t\t\tf:0\n\n\t\t\t\t\t~\n\t\t\t\t" +
-        "ee:0\n\n\t\t\t\t\t~\n\t\td:0\n\n\t\t\t\t\t~\n\t\t\t\tca:0\n\n\t\t\t\t\t~\n\t\t\tc:0\n\n\t\t\t\t\t~\n\t\t\t\t" +
-        "bb:0\n\n\t\t\t\t\t~\nba:1\n\n\t\t\t\t~\n\t\t\tb:0\n\n\t\t\t\t~\n\t\tajk:0\n\n\t\t\t\t~\n\t\t\tab:0\n\n\t\t\t\t~\n\t" +
-        "aa:1\n\n\t\t\t~\n\t\ta:0\n\n\t\t\t~";
+    var expectedOutput = "\t\t\t\t~\n\t\t\tz:1\n\n\t\t\t\t\t~\n\t\t\t\tj:0\n\n\t\t\t\t\t~\n\t\ti:-1\n\n\t\t\t\t~" +
+        "\n\t\t\thi:0\n\n\t\t\t\t~\n\th:0\n\n\t\t\t\t\t~\n\t\t\t\tff:0\n\n\t\t\t\t\t~\n\t\t\tf:0\n\n\t\t\t\t\t~" +
+        "\n\t\t\t\tee:0\n\n\t\t\t\t\t~\n\t\td:0\n\n\t\t\t\t\t~\n\t\t\t\tca:0\n\n\t\t\t\t\t~\n\t\t\tc:0\n\n\t\t\t\t\t~" +
+        "\n\t\t\t\tbb:0\n\n\t\t\t\t\t~\nba:-1\n\n\t\t\t\t~\n\t\t\tb:0\n\n\t\t\t\t~\n\t\tajk:0\n\n\t\t\t\t~\n\t\t\tab:0" +
+        "\n\n\t\t\t\t~\n\taa:-1\n\n\t\t\t~\n\t\ta:0\n\n\t\t\t~";
 
     var orderedWords = [
         [AVLTree.IN_ORDER, wordsInOrder],
